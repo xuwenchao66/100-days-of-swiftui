@@ -12,6 +12,12 @@ struct ContentView: View {
     @State private var correctAnswer = Int.random(in: 0...2)
     @State private var showingScore = false
     @State private var scoreTitle = ""
+    @State private var score = 0
+    @State private var questionTime = 1
+    
+    var isOver: Bool {
+        return questionTime == 3
+    }
     
     var body: some View {
         ZStack {
@@ -24,8 +30,8 @@ struct ContentView: View {
             VStack {
                 VStack {
                     Text("Guess the Flag")
-                            .font(.largeTitle.weight(.bold))
-                            .foregroundStyle(.white)
+                        .font(.largeTitle.weight(.bold))
+                        .foregroundStyle(.white)
                     Text(countries[correctAnswer])
                         .foregroundStyle(.white)
                         .font(.largeTitle.weight(.semibold))
@@ -44,13 +50,21 @@ struct ContentView: View {
         .alert(scoreTitle, isPresented: $showingScore) {
             Button("Continue", action: askQuestion)
         } message: {
-            Text("Your score is ???")
-                .foregroundColor(.white)
-                .font(.title.bold())
+            if isOver {
+                Text("Your score is \(score)")
+                    .foregroundColor(.white)
+                    .font(.title.bold())
+            }
         }
     }
     
     func askQuestion() {
+        if isOver {
+            score = 0
+            questionTime = 1
+        } else {
+            questionTime += 1
+        }
         countries.shuffle()
         correctAnswer = Int.random(in: 0...2)
     }
@@ -58,8 +72,16 @@ struct ContentView: View {
     func answer(_ number: Int) {
         if number == correctAnswer {
             scoreTitle = "Correct!"
+            score += 1
         } else {
-            scoreTitle = "Wrong!"
+            scoreTitle = "Wrong!That‘s \(countries[number])"
+            if score > 0 {
+                score -= 1
+            }
+        }
+        
+        if (isOver) {
+            scoreTitle = "Over now!"
         }
         showingScore = true
     }
