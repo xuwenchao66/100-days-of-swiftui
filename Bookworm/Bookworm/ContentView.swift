@@ -46,8 +46,8 @@ struct ContentView: View {
         }
     }
     
-    func deleteBooks(offests: IndexSet) {
-        for offset in offests {
+    func deleteBooks(offsets: IndexSet) {
+        for offset in offsets {
             modelContext.delete(books[offset])
         }
     }
